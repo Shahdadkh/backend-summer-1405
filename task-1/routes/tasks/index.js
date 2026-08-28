@@ -25,7 +25,7 @@ taskRouter.post("/", uploader.single("photo"), (req, res) => {
   const nextId =
     dataset.length > 0 ? Math.max(...dataset.map((data) => data.id)) + 1 : 1;
   const title = req.body.title;
-  const file = req.file
+  const file = req.file;
 
   const newData = {
     id: nextId,
