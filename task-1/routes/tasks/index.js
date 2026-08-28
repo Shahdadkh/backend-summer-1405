@@ -1,4 +1,5 @@
 const express = require("express");
+const { uploader } = require("../../utils/file.util");
 const taskRouter = express.Router();
 
 let dataset = [];
@@ -20,15 +21,17 @@ taskRouter.get("/:id", (req, res) => {
   res.status(200).json(result);
 });
 
-taskRouter.post("/", (req, res) => {
+taskRouter.post("/", uploader.single("photo"), (req, res) => {
   const nextId =
     dataset.length > 0 ? Math.max(...dataset.map((data) => data.id)) + 1 : 1;
   const title = req.body.title;
+  const file = req.file
 
   const newData = {
     id: nextId,
     title: title,
     completed: false,
+    attachmentPath: file ? `files/${file.filename}` : "",
     createdAt: new Date(),
   };
 
