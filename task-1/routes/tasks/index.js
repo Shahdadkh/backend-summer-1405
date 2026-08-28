@@ -36,7 +36,7 @@ taskRouter.post("/", uploader.single("photo"), (req, res) => {
   };
 
   dataset.push(newData);
-  res.status(200).json(newData);
+  res.status(201).json(newData);
 });
 
 taskRouter.put("/:id", (req, res) => {
