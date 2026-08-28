@@ -14,7 +14,7 @@ taskRouter.get("/:id", (req, res) => {
   const result = datas.find((data) => data.id == id);
 
   if (!result) {
-    res.status(404).json("Not Found");
+    return res.status(404).json("Not Found");
   }
 
   res.status(200).json(result);
@@ -38,13 +38,14 @@ taskRouter.post("/", (req, res) => {
 
 taskRouter.put("/:id", (req, res) => {
   const id = req.params.id;
+  const title = req.body.title;
   const item = dataset.find((data) => data.id == id);
 
   if (!item) {
-    res.status(404).json("Item Not Found");
+    return res.status(404).json("Item Not Found");
   }
 
-  const updateData = { ...item, completed: !item.completed };
+  const updateData = { ...item, title: title };
 
   dataset = dataset.filter((data) => data.id != id);
   dataset.push(updateData);
@@ -57,7 +58,7 @@ taskRouter.patch("/:id", (req, res) => {
   const item = dataset.find((data) => data.id == id);
 
   if (!item) {
-    res.status(404).json("Item Not Found");
+    return res.status(404).json("Item Not Found");
   }
 
   const updateData = { ...item, completed: !item.completed };
