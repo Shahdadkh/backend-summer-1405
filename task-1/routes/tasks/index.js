@@ -1,8 +1,9 @@
 const express = require("express");
 const { uploader } = require("../../utils/file.util");
+const { loadTasks, saveTasks } = require("../../utils/task.util");
 const taskRouter = express.Router();
 
-let dataset = [];
+let dataset = loadTasks();
 
 taskRouter.get("/", (req, res) => {
   const datas = dataset;
@@ -36,6 +37,7 @@ taskRouter.post("/", uploader.single("photo"), (req, res) => {
   };
 
   dataset.push(newData);
+  saveTasks(dataset);
   res.status(201).json(newData);
 });
 
@@ -52,6 +54,7 @@ taskRouter.put("/:id", (req, res) => {
 
   dataset = dataset.filter((data) => data.id != id);
   dataset.push(updateData);
+  saveTasks(dataset);
 
   res.status(200).json(updateData);
 });
@@ -68,6 +71,7 @@ taskRouter.patch("/:id", (req, res) => {
 
   dataset = dataset.filter((data) => data.id != id);
   dataset.push(updateData);
+  saveTasks(dataset);
 
   res.status(200).json(updateData);
 });
@@ -81,7 +85,8 @@ taskRouter.delete("/:id", (req, res) => {
   }
 
   dataset = dataset.filter((data) => data.id != id);
-
+  saveTasks(dataset);
+  
   res.status(200).json(`Item ${id} successfully deleted`);
 });
 
