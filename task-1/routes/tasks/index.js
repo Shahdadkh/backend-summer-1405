@@ -5,14 +5,52 @@ const taskRouter = express.Router();
 let dataset = loadTasks();
 
 taskRouter.get("/", (req, res) => {
-  const datas = dataset;
+  const { completed, search, page, limit } = req.query;
+  let datas = dataset;
+
+  // Filtering
+  if (completed !== undefined) {
+    if (completed !== "true" && completed !== "false") {
+      return res.status(400).json({
+        message: "completed must be true or false",
+      });
+    }
+
+    datas = datas.filter(
+      (data) => data.completed === (completed === "true")
+    );
+  }
+
+  // Search
+  if (search) {
+    datas = datas.filter((data) =>
+      data.title.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
+  // Pagination
+  if (page !== undefined || limit !== undefined) {
+    const currentPage = Number(page) || 1;
+    const currentLimit = Number(limit) || 10;
+
+    if (currentPage < 1 || currentLimit < 1) {
+      return res.status(400).json({
+        message: "page and limit must be greater than 0",
+      });
+    }
+
+    const start = (currentPage - 1) * currentLimit;
+    const end = start + currentLimit;
+
+    datas = datas.slice(start, end);
+  }
+
   res.status(200).json(datas);
 });
 
 taskRouter.get("/:id", (req, res) => {
-  const datas = dataset;
-  const id = req.params.id;
-  const result = datas.find((data) => data.id == id);
+  const id = parseInt(req.params.id);
+  const result = dataset.find((data) => data.id === id);
 
   if (!result) {
     return res.status(404).json({ message: "not found" });
@@ -39,9 +77,9 @@ taskRouter.post("/", (req, res) => {
 });
 
 taskRouter.put("/:id", (req, res) => {
-  const id = req.params.id;
+  const id = parseInt(req.params.id);
   const title = req.body.title;
-  const item = dataset.find((data) => data.id == id);
+  const item = dataset.find((data) => data.id === id);
 
   if (!item) {
     return res.status(404).json({ message: "not found" });
@@ -49,7 +87,7 @@ taskRouter.put("/:id", (req, res) => {
 
   const updateData = { ...item, title: title };
 
-  dataset = dataset.filter((data) => data.id != id);
+  dataset = dataset.filter((data) => data.id !== id);
   dataset.push(updateData);
   saveTasks(dataset);
 
@@ -57,8 +95,8 @@ taskRouter.put("/:id", (req, res) => {
 });
 
 taskRouter.patch("/:id", (req, res) => {
-  const id = req.params.id;
-  const item = dataset.find((data) => data.id == id);
+  const id = parseInt(req.params.id);
+  const item = dataset.find((data) => data.id === id);
 
   if (!item) {
     return res.status(404).json({ message: "not found" });
@@ -66,7 +104,7 @@ taskRouter.patch("/:id", (req, res) => {
 
   const updateData = { ...item, completed: !item.completed };
 
-  dataset = dataset.filter((data) => data.id != id);
+  dataset = dataset.filter((data) => data.id !== id);
   dataset.push(updateData);
   saveTasks(dataset);
 
@@ -74,14 +112,14 @@ taskRouter.patch("/:id", (req, res) => {
 });
 
 taskRouter.delete("/:id", (req, res) => {
-  const id = req.params.id;
-  const item = dataset.find((data) => data.id == id);
+  const id = parseInt(req.params.id);
+  const item = dataset.find((data) => data.id === id);
 
   if (!item) {
     return res.status(404).json({ message: "not found" });
   }
 
-  dataset = dataset.filter((data) => data.id != id);
+  dataset = dataset.filter((data) => data.id !== id);
   saveTasks(dataset);
 
   res.status(200).json({ message: "Item successfully deleted" });
