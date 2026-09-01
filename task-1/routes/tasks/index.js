@@ -15,10 +15,10 @@ taskRouter.get("/:id", (req, res) => {
   const result = datas.find((data) => data.id == id);
 
   if (!result) {
-    return res.status(404).json("Not Found");
+    return res.status(404).json({ message: "not found" });
   }
 
-  res.status(200).json(result);
+  res.status(200).json({ ...result, message: "success" });
 });
 
 taskRouter.post("/", (req, res) => {
@@ -35,7 +35,7 @@ taskRouter.post("/", (req, res) => {
 
   dataset.push(newData);
   saveTasks(dataset);
-  res.status(201).json(newData);
+  res.status(201).json({ ...newData, message: "success" });
 });
 
 taskRouter.put("/:id", (req, res) => {
@@ -44,7 +44,7 @@ taskRouter.put("/:id", (req, res) => {
   const item = dataset.find((data) => data.id == id);
 
   if (!item) {
-    return res.status(404).json("Item Not Found");
+    return res.status(404).json({ message: "not found" });
   }
 
   const updateData = { ...item, title: title };
@@ -53,7 +53,7 @@ taskRouter.put("/:id", (req, res) => {
   dataset.push(updateData);
   saveTasks(dataset);
 
-  res.status(200).json(updateData);
+  res.status(200).json({ ...updateData, message: "success" });
 });
 
 taskRouter.patch("/:id", (req, res) => {
@@ -61,7 +61,7 @@ taskRouter.patch("/:id", (req, res) => {
   const item = dataset.find((data) => data.id == id);
 
   if (!item) {
-    return res.status(404).json("Item Not Found");
+    return res.status(404).json({ message: "not found" });
   }
 
   const updateData = { ...item, completed: !item.completed };
@@ -70,7 +70,7 @@ taskRouter.patch("/:id", (req, res) => {
   dataset.push(updateData);
   saveTasks(dataset);
 
-  res.status(200).json(updateData);
+  res.status(200).json({ ...updateData, message: "success" });
 });
 
 taskRouter.delete("/:id", (req, res) => {
@@ -78,13 +78,13 @@ taskRouter.delete("/:id", (req, res) => {
   const item = dataset.find((data) => data.id == id);
 
   if (!item) {
-    return res.status(404).json("Item Not Found");
+    return res.status(404).json({ message: "not found" });
   }
 
   dataset = dataset.filter((data) => data.id != id);
   saveTasks(dataset);
-  
-  res.status(200).json(`Item ${id} successfully deleted`);
+
+  res.status(200).json({ message: "Item successfully deleted" });
 });
 
 module.exports = { taskRouter };
